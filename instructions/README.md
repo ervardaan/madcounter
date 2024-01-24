@@ -59,6 +59,7 @@ Welcome to CS537! We are looking forward to having a wonderful semester.
 ```
 ```
 prompt> ./MADCounter -f welcome.txt -o output.txt -c -w -l -Lw -Ll
+prompt> cat output.txt
 Total Number of Chars = 73
 Total Unique Chars = 29
 
