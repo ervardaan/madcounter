@@ -1,5 +1,8 @@
 # P1 - Unix Utilities - MADCounter
 
+## <p style="color:red">UPDATES</p>
+- We will not be testing the Ascii character error. You should still be tracking only ASCII characters 0-127
+
 ## Administrivia 
 
 - **Due Date**: January 30th, at 11:59pm
@@ -237,7 +240,7 @@ ERROR: No Output File Provided
 ```
 ERROR: Input File Empty
 ```
-* Ascii character above 127 present - While doing character analysis, if you run into an ascii character that isn't on of the 0-127 ascii character set than you can print the following error, but don't exit. You should complete the analysis and if it is success return 0 at the end. 
+~~* Ascii character above 127 present - While doing character analysis, if you run into an ascii character that isn't on of the 0-127 ascii character set than you can print the following error, but don't exit. You should complete the analysis and if it is success return 0 at the end.~~
   * "ERROR: Detecting Ascii Character \<ascii number detected> at position \<zero based character position>"
 ```
 ERROR: Detecting Ascii Character <ascii number detected> at postion <zero based character position>
