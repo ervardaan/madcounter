@@ -63,8 +63,8 @@ Welcome to CS537! We are looking forward to having a wonderful semester.
 ```
 prompt> ./MADCounter -f welcome.txt -o output.txt -c -w -l -Lw -Ll
 prompt> cat output.txt
-Total Number of Chars: 73
-Total Unique Chars: 29
+Total Number of Chars = 73
+Total Unique Chars = 29
 
 Ascii Value: 10, Char: 
 , Count: 1, Initial Position: 72
@@ -144,8 +144,8 @@ __Statistic Flags__: These will determine which kinds of analysis you should do.
 
 * __-c__ : This flag means you should track each Ascii character 0-127. You should track how many times each character is used and the initial zero based position the character occurred in. You should also track the total number of chars and number of unique chars. When you print the output it should be in the following format, with a line for each character, and should only include characters you actually encountered in the document.
 ```
-Total Number of Chars: <number of chars>
-Total Unique Chars: <number unique chars>
+Total Number of Chars = <number of chars>
+Total Unique Chars = <number unique chars>
 
 Ascii Value: <ascii int>, Char: <character>, Count: <frequency>, Initial Position: <zero based initial position>\n
 ```
