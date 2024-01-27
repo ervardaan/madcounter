@@ -63,8 +63,8 @@ Welcome to CS537! We are looking forward to having a wonderful semester.
 ```
 prompt> ./MADCounter -f welcome.txt -o output.txt -c -w -l -Lw -Ll
 prompt> cat output.txt
-Total Number of Chars = 73
-Total Unique Chars = 29
+Total Number of Chars: 73
+Total Unique Chars: 29
 
 Ascii Value: 10, Char: 
 , Count: 1, Initial Position: 72
@@ -205,7 +205,7 @@ USAGE:
   ./MADCounter -B <batch file>
 ```
 
-* __Invalid Flag__ - All flags should begin with a -, and only flags should begin with this. If there is a flag that we did specify elsewhere in this doc then print this error.
+* __Invalid Flag__ - All flags should begin with a -, and only flags should begin with this. If there is a flag that we did NOT specify elsewhere in this doc then print this error.
   * "ERROR: Invalid Flag Types"
 ```
 ERROR: Invalid Flag Types
