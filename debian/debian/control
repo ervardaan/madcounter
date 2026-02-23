@@ -1,0 +1,24 @@
+Source: madcounter
+Section: utils
+Priority: optional
+Maintainer: Vardaan Kapoor <your.email@example.com>
+Build-Depends: debhelper-compat (= 13), gcc
+Standards-Version: 4.6.2
+Homepage: https://github.com/ervardaan/madcounter
+Rules-Requires-Root: no
+
+Package: madcounter
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: text analysis utility for character, word, and line statistics
+ madcounter reads a text file and generates detailed statistics about
+ its content. It can analyze individual characters, whitespace-separated
+ words, and newline-separated lines.
+ .
+ Features:
+  - Character frequency analysis with ASCII values and positions
+  - Word frequency analysis sorted alphabetically
+  - Line frequency analysis with position tracking
+  - Longest word(s) and longest line(s) detection
+  - Batch mode for processing multiple files
+  - Optional output file support

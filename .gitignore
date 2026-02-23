@@ -1,0 +1,95 @@
+# =============================================================================
+# MADCounter .gitignore
+# =============================================================================
+#
+# WHY THIS FILE EXISTS:
+# Git tracks every file in your project by default.
+# Some files should NEVER be in a git repository:
+#
+#   Compiled binaries: Platform-specific, large, change every compile.
+#                      Recipients should compile from source themselves.
+#
+#   OS files (.DS_Store, Thumbs.db): Created automatically by OS,
+#                      meaningless to others, just noise.
+#
+#   Editor swap files (.swp, *~): Created by vim/emacs during editing,
+#                      should never be shared.
+#
+#   Temporary output files: Files created during testing.
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Compiled binary
+# The `madcounter` binary is compiled from MADCounter.c.
+# Everyone cloning the repo should compile it themselves with: make
+# -----------------------------------------------------------------------------
+madcounter
+
+# -----------------------------------------------------------------------------
+# Object files (produced when compiling with -c flag)
+# Not relevant here since MADCounter.c is a single-file project,
+# but good practice to include.
+# -----------------------------------------------------------------------------
+*.o
+*.a
+*.so
+*.dylib
+
+# -----------------------------------------------------------------------------
+# macOS system files
+# .DS_Store = macOS Finder metadata (folder icons, window sizes)
+# These are machine-specific and useless to others.
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# -----------------------------------------------------------------------------
+# Linux system files
+# -----------------------------------------------------------------------------
+*~
+
+# -----------------------------------------------------------------------------
+# Windows system files (in case anyone uses WSL)
+# -----------------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------------------------------------------------------
+# Editor swap/backup files
+# vim creates .swp files while editing (crash recovery)
+# emacs creates # and ~ files
+# -----------------------------------------------------------------------------
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# -----------------------------------------------------------------------------
+# Build directories
+# If you ever add a src/ layout, compiled output goes here
+# -----------------------------------------------------------------------------
+dist/
+build/
+out/
+
+# -----------------------------------------------------------------------------
+# Test output files
+# Don't commit test outputs — graders run tests themselves
+# -----------------------------------------------------------------------------
+output*.txt
+test_output*.txt
+/tmp/
+
+# -----------------------------------------------------------------------------
+# Valgrind output (memory leak detector)
+# valgrind --log-file=vglog.txt ./madcounter...
+# -----------------------------------------------------------------------------
+vgcore.*
+vglog.txt

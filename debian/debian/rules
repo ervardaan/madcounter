@@ -1,0 +1,55 @@
+#!/usr/bin/make -f
+# =============================================================================
+# Debian Package Build Rules
+# =============================================================================
+#
+# WHAT THIS FILE IS:
+#   A Makefile that debhelper uses to build the .deb package.
+#   debhelper (dh) provides sensible defaults for most C programs.
+#
+# HOW TO BUILD THE .deb PACKAGE:
+#   1. Install build tools:
+#      sudo apt-get install build-essential devscripts debhelper
+#
+#   2. From the project root directory:
+#      dpkg-buildpackage -b -us -uc
+#
+#   3. This creates madcounter_1.0.0_amd64.deb in the parent directory
+#
+#   4. Install the .deb:
+#      sudo dpkg -i ../madcounter_1.0.0_amd64.deb
+#
+# HOW TO PUBLISH TO LAUNCHPAD (Ubuntu's official package server):
+#   1. Create a Launchpad account: https://launchpad.net
+#   2. Set up a PPA (Personal Package Archive)
+#   3. Run: debuild -S  (creates a .dsc source package)
+#   4. Run: dput ppa:YOUR_LAUNCHPAD_ID/madcounter ../madcounter_1.0.0.dsc
+#   5. Ubuntu users can then:
+#      sudo add-apt-repository ppa:YOUR_LAUNCHPAD_ID/madcounter
+#      sudo apt update
+#      sudo apt install madcounter
+#
+# =============================================================================
+
+# Use debhelper default rules — handles 99% of cases automatically
+%:
+	dh $@
+
+# Override the build step to compile our C program
+override_dh_auto_build:
+	gcc -Wall -Werror -O2 -std=c99 -o madcounter MADCounter.c
+
+# Override the install step to put files in the right places
+override_dh_auto_install:
+	install -D -m 755 madcounter \
+		debian/madcounter/usr/bin/madcounter
+	install -D -m 644 man/madcounter.1 \
+		debian/madcounter/usr/share/man/man1/madcounter.1
+	install -D -m 644 README.md \
+		debian/madcounter/usr/share/doc/madcounter/README.md
+
+# Override test step with our smoke test
+override_dh_auto_test:
+	echo "the quick brown fox" > /tmp/deb_test.txt
+	./madcounter -f /tmp/deb_test.txt -c -w | grep "Total Number of Words: 4"
+	rm -f /tmp/deb_test.txt

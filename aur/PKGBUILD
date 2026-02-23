@@ -1,0 +1,128 @@
+# =============================================================================
+# Arch User Repository (AUR) PKGBUILD for MADCounter
+# =============================================================================
+#
+# WHAT THIS FILE IS:
+#   AUR is Arch Linux's community package repository — it has over 80,000
+#   packages. A PKGBUILD is a bash script telling the AUR helper (yay, paru,
+#   etc.) how to download, compile, and install a package.
+#
+# HOW TO PUBLISH TO AUR (so Arch users worldwide can install):
+#   1. Create an account at: https://aur.archlinux.org
+#
+#   2. On an Arch Linux machine, generate a .SRCINFO file:
+#      makepkg --printsrcinfo > .SRCINFO
+#
+#   3. Create the AUR package repository:
+#      git clone ssh://aur@aur.archlinux.org/madcounter.git
+#      cp PKGBUILD .SRCINFO madcounter/
+#      cd madcounter
+#      git add PKGBUILD .SRCINFO
+#      git commit -m "Initial AUR submission"
+#      git push
+#
+#   4. Arch Linux users install with:
+#      yay -S madcounter
+#      # or
+#      paru -S madcounter
+#
+# HOW TO UPDATE:
+#   1. Update pkgver to the new version
+#   2. Update sha256sums (run: makepkg -g to generate automatically)
+#   3. Commit and push to the AUR git repo
+#
+# =============================================================================
+
+# Package name — must be lowercase
+pkgname=madcounter
+
+# Version — must match your git tag (without the "v" prefix)
+pkgver=1.0.0
+
+# Package release number (increment for packaging fixes, not code changes)
+pkgrel=1
+
+# One-line description (shown in AUR search results)
+pkgdesc="Text analysis utility for character, word, and line statistics"
+
+# Supported CPU architectures
+# x86_64 = 64-bit Intel/AMD  |  aarch64 = ARM 64-bit (Raspberry Pi 4, etc.)
+arch=('x86_64' 'aarch64')
+
+# Your project homepage
+url="https://github.com/ervardaan/madcounter"
+
+# Distribution license
+license=('MIT')
+
+# Build dependencies (only needed to compile, not to run the program)
+makedepends=('gcc')
+
+# Runtime dependencies (needed while running the program)
+# MADCounter has no external runtime deps — pure C, standard library only
+depends=()
+
+# Optional features with descriptions
+optdepends=()
+
+# Source archive URL
+# $pkgname expands to "madcounter", $pkgver expands to "1.0.0"
+source=("$pkgname-$pkgver.tar.gz::https://github.com/ervardaan/madcounter/archive/refs/tags/v${pkgver}.tar.gz")
+
+# SHA256 checksums for each source (in same order as source array)
+# Run: makepkg -g   to auto-generate this after updating the URL
+sha256sums=('SKIP')  # Replace with actual hash: makepkg -g
+
+# =============================================================================
+# BUILD FUNCTION
+# Called by makepkg to compile the package.
+# "cd" convention: AUR extracts source to $pkgname-$pkgver/
+# =============================================================================
+build() {
+    cd "$pkgname-$pkgver"
+
+    # Compile with standard flags
+    # CFLAGS is set by makepkg based on the user's /etc/makepkg.conf
+    # We add our own flags in addition to the defaults
+    gcc ${CFLAGS} -Wall -Werror -O2 -std=c99 -o madcounter MADCounter.c
+}
+
+# =============================================================================
+# CHECK FUNCTION (optional but recommended)
+# Runs tests after building. If tests fail, the package isn't installed.
+# =============================================================================
+check() {
+    cd "$pkgname-$pkgver"
+
+    echo "the quick brown fox" > /tmp/madcounter_aur_test.txt
+    ./madcounter -f /tmp/madcounter_aur_test.txt -c -w \
+        | grep "Total Number of Words: 4" \
+        && echo "PASS: word count correct" \
+        || { echo "FAIL: unexpected output"; exit 1; }
+    rm -f /tmp/madcounter_aur_test.txt
+}
+
+# =============================================================================
+# PACKAGE FUNCTION
+# Installs files into the $pkgdir staging directory.
+# makepkg then compresses $pkgdir into the final .pkg.tar.zst archive.
+# When the user runs `pacman -U`, pacman extracts that archive to /.
+# =============================================================================
+package() {
+    cd "$pkgname-$pkgver"
+
+    # Install binary
+    # install -D creates parent directories automatically
+    # -m 755 = rwxr-xr-x (executable by all, writable only by owner)
+    install -D -m 755 madcounter "$pkgdir/usr/bin/madcounter"
+
+    # Install man page
+    # -m 644 = rw-r--r-- (readable by all, writable only by owner)
+    install -D -m 644 man/madcounter.1 "$pkgdir/usr/share/man/man1/madcounter.1"
+
+    # Install README (optional but nice — visible in package info)
+    install -D -m 644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+
+    # Install license
+    install -D -m 644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

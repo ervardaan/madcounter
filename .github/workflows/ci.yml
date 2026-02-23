@@ -1,0 +1,87 @@
+# =============================================================================
+# Continuous Integration (CI) Workflow
+# =============================================================================
+#
+# WHAT THIS DOES:
+#   On every push or pull request to main/master, this workflow:
+#     1. Compiles MADCounter on Linux and macOS
+#     2. Runs a quick smoke test
+#   If compilation or tests fail, GitHub shows a red X on the commit.
+#   This prevents broken code from ever hitting the main branch.
+#
+# WHY THIS MATTERS:
+#   - Catches compilation errors before they reach users
+#   - Verifies code works on both Linux and macOS
+#   - Shows a green checkmark on your GitHub repo — signals quality code
+#
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Build and test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile
+        run: gcc -Wall -Werror -O2 -std=c99 -o madcounter MADCounter.c
+
+      - name: Smoke test — character analysis
+        run: |
+          echo "the quick brown fox jumps over the lazy dog" > /tmp/ci_test.txt
+          ./madcounter -f /tmp/ci_test.txt -c
+          rm /tmp/ci_test.txt
+
+      - name: Smoke test — word analysis
+        run: |
+          echo "hello world hello" > /tmp/ci_test2.txt
+          ./madcounter -f /tmp/ci_test2.txt -w | grep "Total Number of Words: 3"
+          rm /tmp/ci_test2.txt
+
+      - name: Smoke test — all flags
+        run: |
+          echo "the quick brown fox jumps over the lazy dog" > /tmp/ci_test3.txt
+          ./madcounter -f /tmp/ci_test3.txt -c -w -l -Lw -Ll
+          rm /tmp/ci_test3.txt
+
+      - name: Smoke test — flag order preserved
+        run: |
+          echo "hello world" > /tmp/ci_test4.txt
+          OUTPUT=$(./madcounter -f /tmp/ci_test4.txt -w -c)
+          WORD_POS=$(echo "$OUTPUT" | grep -n "Total Number of Words" | cut -d: -f1)
+          CHAR_POS=$(echo "$OUTPUT" | grep -n "Total Number of Chars" | cut -d: -f1)
+          if [ "$WORD_POS" -lt "$CHAR_POS" ]; then
+            echo "PASS: -w flag output appears before -c (correct order)"
+          else
+            echo "FAIL: flag order not respected"
+            exit 1
+          fi
+          rm /tmp/ci_test4.txt
+
+      - name: Smoke test — batch mode
+        run: |
+          echo "hello world" > /tmp/ci_batch_input.txt
+          echo "-f /tmp/ci_batch_input.txt -w" > /tmp/ci_batch.txt
+          echo "-f /tmp/ci_batch_input.txt -c" >> /tmp/ci_batch.txt
+          ./madcounter -B /tmp/ci_batch.txt
+          rm /tmp/ci_batch_input.txt /tmp/ci_batch.txt
+
+      - name: Smoke test — error handling
+        run: |
+          # Should fail with exit code 1 and print error message (not crash)
+          OUTPUT=$(./madcounter -f /tmp/nonexistent_file_xyz.txt -c 2>&1 || true)
+          echo "$OUTPUT" | grep -q "ERROR:" && echo "PASS: prints error for missing file"

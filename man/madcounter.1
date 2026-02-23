@@ -1,0 +1,338 @@
+.\" ==========================================================================
+.\" Man page for madcounter
+.\" ==========================================================================
+.\"
+.\" Man page format is called "groff" (GNU troff).
+.\" Lines starting with .\" are comments (ignored when rendering).
+.\" Lines starting with . are formatting commands.
+.\"
+.\" SECTIONS EXPLAINED:
+.\"   NAME        - One-line description (used by `apropos` search)
+.\"   SYNOPSIS    - How to call the command (shows all options)
+.\"   DESCRIPTION - What the program does in detail
+.\"   OPTIONS     - Every flag explained
+.\"   EXAMPLES    - Real-world usage, most users jump straight here
+.\"   EXIT STATUS - What return codes mean (important for scripts)
+.\"   ERRORS      - All possible error messages
+.\"   AUTHOR      - Who wrote it
+.\"   SEE ALSO    - Related commands
+.\"
+.\" ==========================================================================
+
+.\" TH = Title Header. Format: NAME  SECTION  DATE  VERSION  CATEGORY
+.\" Section 1 = user commands (ls, grep, cat are all section 1)
+.TH MADCOUNTER 1 "January 2026" "madcounter 1.0.0" "User Commands"
+
+.\" -------------------------------------------------------------------------
+.SH NAME
+.\" -------------------------------------------------------------------------
+.\" This one line is what `apropos` and `whatis` show:
+.\"   $ apropos text analysis
+.\"   madcounter (1) - analyze text files for character, word, and line statistics
+
+madcounter \- analyze text files for character, word, and line statistics
+
+.\" -------------------------------------------------------------------------
+.SH SYNOPSIS
+.\" -------------------------------------------------------------------------
+.\" Shows the command structure. Convention:
+.\"   REQUIRED arguments in <angle brackets>
+.\"   OPTIONAL arguments in [square brackets]
+.\"   Alternatives separated by |
+.\"
+.\" .B = bold   .I = italic   .RI = right-italic
+
+.B madcounter
+.BI \-f " input_file"
+.RB [ \-o
+.IR output_file ]
+.RB [ \-c ]
+.RB [ \-w ]
+.RB [ \-l ]
+.RB [ \-Lw ]
+.RB [ \-Ll ]
+
+.br
+or:
+.br
+
+.B madcounter
+.BI \-B " batch_file"
+
+.\" -------------------------------------------------------------------------
+.SH DESCRIPTION
+.\" -------------------------------------------------------------------------
+.\" .PP starts a new paragraph
+
+.B madcounter
+reads a text file and generates detailed statistics about its content.
+It can analyze individual characters, whitespace-separated words,
+and newline-separated lines.
+
+.PP
+Statistics are output in the order the flags appear on the command line.
+When multiple statistics are printed, they are separated by a blank line.
+All string comparisons and output ordering use ASCII lexicographic order.
+
+.PP
+.B madcounter
+can also run in batch mode, processing multiple analysis requests from
+a file — one command per line — without restarting the program.
+
+.\" -------------------------------------------------------------------------
+.SH OPTIONS
+.\" -------------------------------------------------------------------------
+.\" .TP = Tagged Paragraph. The first line is the "tag", rest is indented body.
+
+.TP
+.BI \-f " input_file"
+(Required) Path to the text file to analyze. The file must exist and must
+not be empty.
+
+.TP
+.BI \-o " output_file"
+(Optional) Write all output to
+.I output_file
+instead of standard output (stdout). If this flag is not specified, all
+results are printed to the terminal.
+
+.TP
+.B \-c
+Perform character analysis. For every ASCII character (values 0\(en127)
+found in the file, print its ASCII integer value, the character itself,
+how many times it appears (frequency), and the zero-based index of its
+first occurrence (initial position).
+
+Also prints the total character count and total unique character count.
+
+.TP
+.B \-w
+Perform word analysis. Words are whitespace-separated tokens (as read
+by
+.BR fscanf (3)
+with the
+.B %s
+format specifier). For each unique word, prints the word itself,
+its frequency, and the zero-based word index of its first occurrence.
+
+Also prints the total word count and total unique word count. Words are
+listed in ASCII alphabetical (lexicographic) order.
+
+.TP
+.B \-l
+Perform line analysis. Lines are newline-separated sequences (as read
+by
+.BR fgets (3)).
+Trailing newline characters are stripped before comparison and display.
+For each unique line, prints the line, its frequency, and the zero-based
+line number of its first occurrence.
+
+Also prints the total line count and total unique line count. Lines are
+listed in ASCII alphabetical (lexicographic) order.
+
+.TP
+.B \-Lw
+Display the longest word(s). If multiple words share the maximum length,
+all are printed in ASCII alphabetical order, one per line, indented with
+a tab character.
+
+.TP
+.B \-Ll
+Display the longest line(s). If multiple lines share the maximum length,
+all are printed in ASCII alphabetical order, one per line, indented with
+a tab character.
+
+.TP
+.BI \-B " batch_file"
+Enable batch mode. Reads
+.I batch_file
+and processes each non-empty line as a separate
+.B madcounter
+command (without the executable name). If an error occurs in one batch
+command, the error message is printed and processing continues with the
+next line.
+
+.\" -------------------------------------------------------------------------
+.SH OUTPUT FORMAT
+.\" -------------------------------------------------------------------------
+
+.SS Character Analysis (\-c)
+.nf
+Total Number of Chars = <count>
+Total Unique Chars = <count>
+
+Ascii Value: <int>, Char: <char>, Count: <freq>, Initial Position: <pos>
+...
+.fi
+
+.SS Word Analysis (\-w)
+.nf
+Total Number of Words: <count>
+Total Unique Words: <count>
+
+Word: <string>, Freq: <freq>, Initial Position: <pos>
+...
+.fi
+
+.SS Line Analysis (\-l)
+.nf
+Total Number of Lines: <count>
+Total Unique Lines: <count>
+
+Line: <string>, Freq: <freq>, Initial Position: <pos>
+...
+.fi
+
+.SS Longest Word (\-Lw)
+.nf
+Longest Word is <length> characters long:
+	<word1>
+	<word2>
+	...
+.fi
+
+.SS Longest Line (\-Ll)
+.nf
+Longest Line is <length> characters long:
+	<line1>
+	<line2>
+	...
+.fi
+
+.\" -------------------------------------------------------------------------
+.SH EXAMPLES
+.\" -------------------------------------------------------------------------
+
+.TP
+Analyze a file for character statistics and write to a file:
+.B madcounter \-f document.txt \-o results.txt \-c
+
+.TP
+Word and line analysis printed to terminal:
+.B madcounter \-f document.txt \-w \-l
+
+.TP
+All statistics, output in the order: lines first, then words, then characters:
+.B madcounter \-f document.txt \-l \-w \-c
+
+.TP
+Display only the longest word and longest line:
+.B madcounter \-f document.txt \-Lw \-Ll
+
+.TP
+Full analysis with output file:
+.B madcounter \-f document.txt \-o analysis.txt \-c \-w \-l \-Lw \-Ll
+
+.TP
+Batch mode processing multiple files:
+.B madcounter \-B batch.txt
+
+Example batch.txt contents:
+.nf
+\-f file1.txt \-o out1.txt \-c \-w
+\-f file2.txt \-o out2.txt \-l \-Lw \-Ll
+\-f file3.txt \-c
+.fi
+
+.\" -------------------------------------------------------------------------
+.SH EXIT STATUS
+.\" -------------------------------------------------------------------------
+
+.TP
+.B 0
+Success. Analysis completed without errors.
+
+.TP
+.B 1
+Failure. An error occurred (invalid arguments, file not found, empty file, etc.).
+The specific error message is printed to standard output before exiting.
+
+.B Note:
+In batch mode, the program always returns
+.B 0
+even if individual commands within the batch encounter errors. Each failing
+batch command prints its error message and the program continues to the next.
+
+.\" -------------------------------------------------------------------------
+.SH ERRORS
+.\" -------------------------------------------------------------------------
+All error messages are printed to standard output (not stderr).
+
+.TP
+.B "USAGE: ..."
+Fewer than 3 arguments were provided. The full usage string is printed.
+
+.TP
+.B "ERROR: Invalid Flag Types"
+An unrecognized flag was encountered, or a non-flag argument appeared
+where a flag was expected.
+
+.TP
+.B "ERROR: No Input File Provided"
+The
+.B \-f
+flag was not specified, or it was immediately followed by another flag
+instead of a filename.
+
+.TP
+.B "ERROR: Can't open input file"
+The specified input file does not exist or cannot be opened (permission denied, etc.).
+
+.TP
+.B "ERROR: Input File Empty"
+The input file exists but contains no data.
+
+.TP
+.B "ERROR: No Output File Provided"
+The
+.B \-o
+flag was specified but was not followed by a filename.
+
+.TP
+.B "ERROR: Can't open batch file"
+The specified batch file does not exist or cannot be opened.
+
+.TP
+.B "ERROR: Batch File Empty"
+The batch file exists but contains no data.
+
+.\" -------------------------------------------------------------------------
+.SH NOTES
+.\" -------------------------------------------------------------------------
+
+.IP \(bu 2
+Character positions are zero-based: the first character in the file is at position 0.
+
+.IP \(bu 2
+Word positions are zero-based: the first word is at position 0.
+
+.IP \(bu 2
+Line positions are zero-based: the first line is at position 0.
+
+.IP \(bu 2
+Only ASCII characters 0\(en127 are tracked in character analysis.
+
+.IP \(bu 2
+Alphabetical sorting uses ASCII lexicographic order, meaning uppercase
+letters (A\(enZ, ASCII 65\(en90) sort before lowercase letters (a\(enz, ASCII 97\(en122).
+
+.\" -------------------------------------------------------------------------
+.SH AUTHOR
+.\" -------------------------------------------------------------------------
+
+Written by Vardaan Kapoor.
+
+.\" -------------------------------------------------------------------------
+.SH SEE ALSO
+.\" -------------------------------------------------------------------------
+
+.BR wc (1),
+.BR grep (1),
+.BR sort (1),
+.BR uniq (1),
+.BR awk (1),
+.BR cat (1)
+
+.PP
+Source code available at:
+.I https://github.com/ervardaan/madcounter
