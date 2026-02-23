@@ -71,7 +71,7 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/ervardaan/madcounter/archiv
 
 # SHA256 checksums for each source (in same order as source array)
 # Run: makepkg -g   to auto-generate this after updating the URL
-sha256sums=('SKIP')  # Replace with actual hash: makepkg -g
+sha256sums=('d3eb3a2add1a3dbf5fd1069e9fd3fbcdcf0983255b3e447b24e6f2699ee4b7dd')
 
 # =============================================================================
 # BUILD FUNCTION

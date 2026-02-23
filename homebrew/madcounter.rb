@@ -56,7 +56,7 @@ class Madcounter < Formula
   #   shasum -a 256 madcounter.tar.gz
   # -------------------------------------------------------------------------
   url "https://github.com/ervardaan/madcounter/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "REPLACE_WITH_ACTUAL_SHA256_AFTER_TAGGING"
+  sha256 "d3eb3a2add1a3dbf5fd1069e9fd3fbcdcf0983255b3e447b24e6f2699ee4b7dd"
   version "1.0.0"
   license "MIT"
 
