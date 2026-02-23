@@ -23,9 +23,9 @@
 #   1. Create a Launchpad account: https://launchpad.net
 #   2. Set up a PPA (Personal Package Archive)
 #   3. Run: debuild -S  (creates a .dsc source package)
-#   4. Run: dput ppa:YOUR_LAUNCHPAD_ID/madcounter ../madcounter_1.0.0.dsc
+#   4. Run: dput ppa:ervardaan/madcounter ../madcounter_1.0.0.dsc
 #   5. Ubuntu users can then:
-#      sudo add-apt-repository ppa:YOUR_LAUNCHPAD_ID/madcounter
+#      sudo add-apt-repository ppa:ervardaan/madcounter
 #      sudo apt update
 #      sudo apt install madcounter
 #

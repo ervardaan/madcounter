@@ -6,8 +6,8 @@ This guide explains how to make `madcounter` installable worldwide — so that a
 
 **After following this guide, users worldwide can install with:**
 
-- **macOS**: `brew install YOUR_USERNAME/tap/madcounter`
-- **All platforms (one-liner)**: `curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/madcounter/main/scripts/install-binary.sh | bash`
+- **macOS**: `brew install ervardaan/tap/madcounter`
+- **All platforms (one-liner)**: `curl -fsSL https://raw.githubusercontent.com/ervardaan/madcounter/main/scripts/install-binary.sh | bash`
 - **Arch Linux**: `yay -S madcounter`
 - **Ubuntu/Debian (via PPA)**: `sudo apt install madcounter`
 
@@ -30,7 +30,7 @@ All worldwide distribution depends on having a public GitHub repository. This is
 ```bash
 cd /Users/vardaankapoor/Documents/p1
 git init   # (already done if git is set up)
-git remote add origin https://github.com/YOUR_USERNAME/madcounter.git
+git remote add origin https://github.com/ervardaan/madcounter.git
 git add .
 git commit -m "Initial release v1.0.0"
 git push -u origin main
@@ -77,9 +77,9 @@ git push origin v1.0.0
 ```
 
 **Then watch the magic happen:**
-1. Go to: `https://github.com/YOUR_USERNAME/madcounter/actions`
+1. Go to: `https://github.com/ervardaan/madcounter/actions`
 2. You will see a workflow run called "Release" — it takes 2-3 minutes
-3. After it completes, go to: `https://github.com/YOUR_USERNAME/madcounter/releases`
+3. After it completes, go to: `https://github.com/ervardaan/madcounter/releases`
 4. You will see a release called "MADCounter v1.0.0" with 3 binary downloads
 
 **WHY this step matters:** The Homebrew formula and curl installer both download from the GitHub Releases page. Without a tagged release, users have nothing to download.
@@ -96,7 +96,7 @@ Homebrew is the #1 package manager for macOS. This makes `brew install madcounte
 
 1. On GitHub, create a **new repository** named exactly: `homebrew-tap`
    - The `homebrew-` prefix is required by Homebrew
-   - Full URL: `https://github.com/YOUR_USERNAME/homebrew-tap`
+   - Full URL: `https://github.com/ervardaan/homebrew-tap`
    - Set as Public
 
 2. Create the directory structure:
@@ -118,7 +118,7 @@ After creating the release in Step 3:
 
 ```bash
 # Download the source archive GitHub created for your tag
-curl -Lo madcounter.tar.gz https://github.com/YOUR_USERNAME/madcounter/archive/refs/tags/v1.0.0.tar.gz
+curl -Lo madcounter.tar.gz https://github.com/ervardaan/madcounter/archive/refs/tags/v1.0.0.tar.gz
 
 # Get its SHA256 hash
 shasum -a 256 madcounter.tar.gz
@@ -136,17 +136,17 @@ cd homebrew-tap
 git init
 git add .
 git commit -m "Add madcounter formula v1.0.0"
-git remote add origin https://github.com/YOUR_USERNAME/homebrew-tap.git
+git remote add origin https://github.com/ervardaan/homebrew-tap.git
 git push -u origin main
 ```
 
 ### 4d. Users Install With:
 
 ```bash
-brew tap YOUR_USERNAME/tap
+brew tap ervardaan/tap
 brew install madcounter
 # or in one command:
-brew install YOUR_USERNAME/tap/madcounter
+brew install ervardaan/tap/madcounter
 ```
 
 **WHY:** `brew` is how basically all developers on macOS install CLI tools. Supporting it makes madcounter accessible to millions of Mac users.
@@ -208,7 +208,7 @@ After completing Steps 3-4:
 2. Push the update to GitHub
 3. Test the installer yourself:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/madcounter/main/scripts/install-binary.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/ervardaan/madcounter/main/scripts/install-binary.sh | bash
    ```
 
 This one-liner works on **any Linux distribution and macOS** without needing a package manager.

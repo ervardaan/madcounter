@@ -11,7 +11,7 @@
 # HOW TO PUBLISH THIS (so all macOS users can install):
 #   1. Create a new GitHub repo named "homebrew-tap"
 #      (MUST be named homebrew-<something>, the "homebrew-" prefix is required)
-#      e.g., github.com/YOUR_USERNAME/homebrew-tap
+#      e.g., github.com/ervardaan/homebrew-tap
 #
 #   2. Create the directory structure in that repo:
 #      homebrew-tap/
@@ -23,16 +23,16 @@
 #      - `sha256`: SHA256 checksum of that archive (run: shasum -a 256 <file>)
 #
 #   4. Users install with:
-#      brew tap YOUR_USERNAME/tap
+#      brew tap ervardaan/tap
 #      brew install madcounter
 #
 #   Or in one command:
-#      brew install YOUR_USERNAME/tap/madcounter
+#      brew install ervardaan/tap/madcounter
 #
 # HOW TO UPDATE AFTER A NEW RELEASE:
 #   1. Push a new git tag (e.g., v1.1.0)
 #   2. Download the GitHub-generated source archive:
-#      curl -Lo madcounter.tar.gz https://github.com/YOUR_USERNAME/madcounter/archive/refs/tags/v1.1.0.tar.gz
+#      curl -Lo madcounter.tar.gz https://github.com/ervardaan/madcounter/archive/refs/tags/v1.1.0.tar.gz
 #   3. Get its hash:
 #      shasum -a 256 madcounter.tar.gz
 #   4. Update `url` and `sha256` in this file
