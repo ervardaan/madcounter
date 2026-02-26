@@ -39,6 +39,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false   # if one platform fails, the others keep building
       matrix:
         include:
           # ------------------------------------------------------------------
@@ -132,6 +133,7 @@ jobs:
   release:
     name: Create GitHub Release
     needs: build
+    if: ${{ always() && needs.build.result != 'cancelled' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -226,3 +228,4 @@ jobs:
             artifacts/madcounter-windows-x86_64.exe/madcounter-windows-x86_64.exe
           draft: false
           prerelease: false
+          fail_on_unmatched_files: false
