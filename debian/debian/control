@@ -1,7 +1,7 @@
 Source: madcounter
 Section: utils
 Priority: optional
-Maintainer: Vardaan Kapoor <your.email@example.com>
+Maintainer: Vardaan Kapoor <vardaan123454321@Gmail.com>
 Build-Depends: debhelper-compat (= 13), gcc
 Standards-Version: 4.6.2
 Homepage: https://github.com/ervardaan/madcounter
