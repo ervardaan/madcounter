@@ -55,9 +55,9 @@ class Madcounter < Formula
   #   curl -Lo madcounter.tar.gz https://github.com/.../vX.Y.Z.tar.gz
   #   shasum -a 256 madcounter.tar.gz
   # -------------------------------------------------------------------------
-  url "https://github.com/ervardaan/madcounter/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "d3eb3a2add1a3dbf5fd1069e9fd3fbcdcf0983255b3e447b24e6f2699ee4b7dd"
-  version "1.0.0"
+  url "https://github.com/ervardaan/madcounter/archive/refs/tags/v1.1.1.tar.gz"
+  sha256 "610a9c69e7b3a7fed56ddd156a42e90a837a4b5d5c66dacdeeea3343b6eabf0f"
+  version "1.1.1"
   license "MIT"
 
   # -------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 {
-    "version": "1.0.0",
+    "version": "1.1.1",
     "description": "Text analysis utility for character, word, and line statistics",
     "homepage": "https://github.com/ervardaan/madcounter",
     "license": "MIT",
-    "url": "https://github.com/ervardaan/madcounter/releases/download/v1.0.0/madcounter-windows-x86_64.exe",
-    "hash": "REPLACE_WITH_SHA256_AFTER_FIRST_RELEASE",
+    "url": "https://github.com/ervardaan/madcounter/releases/download/v1.1.1/madcounter-windows-x86_64.exe",
+    "hash": "35b4f851b833694cd89ba358dc215b998de7db769ebe647f94fc38920b3a4422",
     "bin": [
         ["madcounter-windows-x86_64.exe", "madcounter"]
     ],

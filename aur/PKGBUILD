@@ -37,7 +37,7 @@
 pkgname=madcounter
 
 # Version — must match your git tag (without the "v" prefix)
-pkgver=1.0.0
+pkgver=1.1.1
 
 # Package release number (increment for packaging fixes, not code changes)
 pkgrel=1
@@ -71,7 +71,7 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/ervardaan/madcounter/archiv
 
 # SHA256 checksums for each source (in same order as source array)
 # Run: makepkg -g   to auto-generate this after updating the URL
-sha256sums=('d3eb3a2add1a3dbf5fd1069e9fd3fbcdcf0983255b3e447b24e6f2699ee4b7dd')
+sha256sums=('610a9c69e7b3a7fed56ddd156a42e90a837a4b5d5c66dacdeeea3343b6eabf0f')
 
 # =============================================================================
 # BUILD FUNCTION
