@@ -37,6 +37,9 @@ jobs:
   build:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    # If a job has optional: true in the matrix, its failure/cancellation
+    # does not affect the overall matrix result — the release still proceeds.
+    continue-on-error: ${{ matrix.optional == true }}
 
     strategy:
       fail-fast: false   # if one platform fails, the others keep building
@@ -50,6 +53,7 @@ jobs:
             artifact_name: madcounter-linux-x86_64
             binary: madcounter
             cc: gcc
+            optional: false
 
           # ------------------------------------------------------------------
           # Linux ARM64
@@ -60,15 +64,20 @@ jobs:
             artifact_name: madcounter-linux-arm64
             binary: madcounter
             cc: gcc
+            optional: false
 
           # ------------------------------------------------------------------
           # macOS Intel (x86_64)
           # Macs released before late 2020.
+          # Marked optional: true because GitHub's macos-13 Intel runner is
+          # frequently unavailable. Intel Mac users can use Homebrew, which
+          # compiles from source for their architecture.
           # ------------------------------------------------------------------
           - os: macos-13
             artifact_name: madcounter-macos-x86_64
             binary: madcounter
             cc: gcc
+            optional: true
 
           # ------------------------------------------------------------------
           # macOS Apple Silicon (arm64)
@@ -78,6 +87,7 @@ jobs:
             artifact_name: madcounter-macos-arm64
             binary: madcounter
             cc: gcc
+            optional: false
 
           # ------------------------------------------------------------------
           # Windows x86_64
@@ -89,6 +99,7 @@ jobs:
             artifact_name: madcounter-windows-x86_64.exe
             binary: madcounter.exe
             cc: gcc
+            optional: false
 
     steps:
       - name: Checkout source code
@@ -133,7 +144,7 @@ jobs:
   release:
     name: Create GitHub Release
     needs: build
-    if: ${{ always() && needs.build.result != 'cancelled' }}
+    if: always()   # run even if optional jobs (macos-13) were cancelled
     runs-on: ubuntu-latest
 
     permissions:
