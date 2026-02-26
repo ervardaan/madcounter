@@ -4,28 +4,26 @@
 #
 # WHAT THIS DOES:
 #   When you push a git tag like "v1.0.0", this workflow automatically:
-#     1. Checks out your source code on multiple machines (Linux, macOS)
-#     2. Compiles MADCounter on each platform natively
+#     1. Checks out your source code on 5 different machines
+#     2. Compiles MADCounter natively on each platform
 #     3. Uploads all compiled binaries to a GitHub Release page
 #
-# WHY THIS MATTERS FOR WORLDWIDE DISTRIBUTION:
-#   - Users on Linux download the Linux binary
-#   - Users on macOS download the macOS binary
-#   - Nobody needs gcc or make — they just download and run
-#   - The Homebrew formula and curl installer both rely on these artifacts
+# PLATFORMS COVERED:
+#   - Linux x86_64   (standard servers, Intel/AMD desktops)
+#   - Linux arm64    (Raspberry Pi 4/5, AWS Graviton, Oracle A1)
+#   - macOS x86_64   (Intel Macs, pre-2021)
+#   - macOS arm64    (Apple Silicon M1/M2/M3/M4, 2021+)
+#   - Windows x86_64 (Windows 10/11, Intel/AMD)
 #
 # HOW TO TRIGGER A RELEASE:
 #   git tag v1.0.0
 #   git push origin v1.0.0
-#   → GitHub Actions compiles everything and creates a release automatically
+#   GitHub Actions compiles everything and creates a release automatically.
 #
 # =============================================================================
 
 name: Release
 
-# -----------------------------------------------------------------------
-# TRIGGER: Only runs when you push a tag starting with "v" (e.g. v1.0.0)
-# -----------------------------------------------------------------------
 on:
   push:
     tags:
@@ -34,10 +32,7 @@ on:
 jobs:
   # -----------------------------------------------------------------------
   # JOB: build
-  # Runs on three different machines in parallel:
-  #   1. ubuntu-latest  → produces: madcounter-linux-x86_64
-  #   2. macos-13       → produces: madcounter-macos-x86_64  (Intel Mac)
-  #   3. macos-14       → produces: madcounter-macos-arm64   (Apple Silicon)
+  # Runs on 5 machines in parallel, one per platform.
   # -----------------------------------------------------------------------
   build:
     name: Build on ${{ matrix.os }}
@@ -46,52 +41,83 @@ jobs:
     strategy:
       matrix:
         include:
-          # Linux x86_64 (standard cloud servers, most Linux desktops)
+          # ------------------------------------------------------------------
+          # Linux x86_64
+          # Standard 64-bit Intel/AMD. Covers Ubuntu, Debian, Fedora, etc.
+          # ------------------------------------------------------------------
           - os: ubuntu-latest
             artifact_name: madcounter-linux-x86_64
+            binary: madcounter
             cc: gcc
 
-          # macOS Intel (Macs before 2021)
+          # ------------------------------------------------------------------
+          # Linux ARM64
+          # Raspberry Pi 4/5, AWS Graviton, Oracle A1 free tier, etc.
+          # GitHub provides native ARM64 Linux runners for public repos.
+          # ------------------------------------------------------------------
+          - os: ubuntu-24.04-arm
+            artifact_name: madcounter-linux-arm64
+            binary: madcounter
+            cc: gcc
+
+          # ------------------------------------------------------------------
+          # macOS Intel (x86_64)
+          # Macs released before late 2020.
+          # ------------------------------------------------------------------
           - os: macos-13
             artifact_name: madcounter-macos-x86_64
+            binary: madcounter
             cc: gcc
 
-          # macOS Apple Silicon (Macs from 2021+, M1/M2/M3/M4)
+          # ------------------------------------------------------------------
+          # macOS Apple Silicon (arm64)
+          # M1/M2/M3/M4 Macs released from late 2020 onwards.
+          # ------------------------------------------------------------------
           - os: macos-14
             artifact_name: madcounter-macos-arm64
+            binary: madcounter
+            cc: gcc
+
+          # ------------------------------------------------------------------
+          # Windows x86_64
+          # Windows 10 and 11, Intel/AMD 64-bit.
+          # Uses MinGW64 (gcc port for Windows), pre-installed on the runner.
+          # Output binary is an .exe file.
+          # ------------------------------------------------------------------
+          - os: windows-latest
+            artifact_name: madcounter-windows-x86_64.exe
+            binary: madcounter.exe
             cc: gcc
 
     steps:
-      # Step 1: Get your source code onto the GitHub machine
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # Step 2: On macOS, gcc is an alias for Apple Clang; make sure it works
+      # Verify the compiler is available and print its version
       - name: Verify compiler
         run: ${{ matrix.cc }} --version
 
-      # Step 3: Compile the binary
-      # -Wall     = all warnings
-      # -Werror   = warnings are errors (same as your Makefile)
-      # -O2       = optimize for speed
-      # -std=c99  = C99 standard
+      # Compile the binary. Use bash shell on all platforms (Git Bash on
+      # Windows) so the same command works everywhere.
       - name: Compile MADCounter
-        run: ${{ matrix.cc }} -Wall -Werror -O2 -std=c99 -o madcounter MADCounter.c
+        shell: bash
+        run: ${{ matrix.cc }} -Wall -Werror -O2 -std=c99 -o ${{ matrix.binary }} MADCounter.c
 
-      # Step 4: Quick smoke test — make sure the compiled binary runs
+      # Quick smoke test: verify the binary runs and produces correct output.
+      # Uses bash on all platforms (Git Bash on Windows supports /tmp).
       - name: Smoke test
+        shell: bash
         run: |
-          echo "the quick brown fox" > /tmp/test.txt
-          ./madcounter -f /tmp/test.txt -c -w
-          rm /tmp/test.txt
+          echo "the quick brown fox" > /tmp/mc_test.txt
+          ./${{ matrix.binary }} -f /tmp/mc_test.txt -c -w
+          rm /tmp/mc_test.txt
 
-      # Step 5: Rename binary to include platform name
-      # (all three binaries would be named "madcounter" without this,
-      #  which would cause conflicts when uploading to the release)
+      # Rename the binary to include the platform suffix before uploading,
+      # so all 5 binaries can coexist in the same release.
       - name: Rename binary for release
-        run: cp madcounter ${{ matrix.artifact_name }}
+        shell: bash
+        run: cp ${{ matrix.binary }} ${{ matrix.artifact_name }}
 
-      # Step 6: Upload as a build artifact (passed to the release job below)
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -100,32 +126,26 @@ jobs:
 
   # -----------------------------------------------------------------------
   # JOB: release
-  # Runs after ALL build jobs complete successfully.
-  # Downloads all compiled binaries and attaches them to a GitHub Release.
+  # Runs after ALL 5 build jobs complete successfully.
+  # Downloads all binaries and attaches them to a GitHub Release.
   # -----------------------------------------------------------------------
   release:
     name: Create GitHub Release
-    needs: build          # Wait for all builds to finish
+    needs: build
     runs-on: ubuntu-latest
 
-    # Required permission to create releases
     permissions:
       contents: write
 
     steps:
-      # Download all three compiled binaries from the build job
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts/        # Downloads into artifacts/<artifact_name>/
+          path: artifacts/
 
-      # List what we downloaded (useful for debugging)
       - name: List artifacts
         run: ls -la artifacts/*/
 
-      # Create the GitHub Release and attach all binaries
-      # The release title is the tag name (e.g. "v1.0.0")
-      # The body contains installation instructions for each platform
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -135,46 +155,74 @@ jobs:
 
             A text analysis utility for character, word, and line statistics.
 
-            ### Installation
+            ---
 
-            **macOS (Homebrew — recommended):**
+            ### Install
+
+            **macOS (Homebrew):**
             ```bash
             brew install ervardaan/tap/madcounter
             ```
 
-            **Linux / macOS (curl installer):**
+            **Linux / macOS (one-liner):**
             ```bash
             curl -fsSL https://raw.githubusercontent.com/ervardaan/madcounter/main/scripts/install-binary.sh | bash
             ```
 
-            **Manual download:**
-
-            | Platform | Download |
-            |----------|----------|
-            | Linux x86_64 | [madcounter-linux-x86_64](madcounter-linux-x86_64) |
-            | macOS Intel (x86_64) | [madcounter-macos-x86_64](madcounter-macos-x86_64) |
-            | macOS Apple Silicon (arm64) | [madcounter-macos-arm64](madcounter-macos-arm64) |
-
-            **After manual download:**
-            ```bash
-            chmod +x madcounter-*
-            sudo mv madcounter-linux-x86_64 /usr/local/bin/madcounter   # Linux
-            # or
-            sudo mv madcounter-macos-arm64 /usr/local/bin/madcounter    # macOS M1+
+            **Windows (Scoop):**
+            ```powershell
+            scoop bucket add ervardaan https://github.com/ervardaan/scoop-bucket
+            scoop install madcounter
             ```
+
+            **Arch Linux:**
+            ```bash
+            yay -S madcounter
+            ```
+
+            **Ubuntu/Debian (via PPA):**
+            ```bash
+            sudo add-apt-repository ppa:ervardaan/madcounter
+            sudo apt update && sudo apt install madcounter
+            ```
+
+            ---
+
+            ### Manual download
+
+            | Platform | File |
+            |----------|------|
+            | Linux x86_64 (Intel/AMD) | `madcounter-linux-x86_64` |
+            | Linux arm64 (Raspberry Pi, AWS Graviton) | `madcounter-linux-arm64` |
+            | macOS Intel (pre-2021 Macs) | `madcounter-macos-x86_64` |
+            | macOS Apple Silicon M1/M2/M3/M4 | `madcounter-macos-arm64` |
+            | Windows 10/11 | `madcounter-windows-x86_64.exe` |
+
+            After manual download on Linux/macOS:
+            ```bash
+            chmod +x madcounter-linux-x86_64
+            sudo mv madcounter-linux-x86_64 /usr/local/bin/madcounter
+            ```
+
+            After manual download on Windows — move the `.exe` to any folder in
+            your `%PATH%`, for example `C:\Windows\System32\`.
+
+            ---
 
             ### Usage
             ```
-            madcounter -f <file> -c          # Character analysis
-            madcounter -f <file> -w          # Word analysis
-            madcounter -f <file> -l          # Line analysis
-            madcounter -f <file> -Lw -Ll     # Longest word and line
-            madcounter -B <batch.txt>        # Batch mode
-            man madcounter                   # Full documentation
+            madcounter -f <file> -c       # character analysis
+            madcounter -f <file> -w       # word analysis
+            madcounter -f <file> -l       # line analysis
+            madcounter -f <file> -Lw -Ll  # longest word and line
+            madcounter -B <batch.txt>     # batch mode
+            man madcounter                # full documentation (Linux/macOS)
             ```
           files: |
             artifacts/madcounter-linux-x86_64/madcounter-linux-x86_64
+            artifacts/madcounter-linux-arm64/madcounter-linux-arm64
             artifacts/madcounter-macos-x86_64/madcounter-macos-x86_64
             artifacts/madcounter-macos-arm64/madcounter-macos-arm64
+            artifacts/madcounter-windows-x86_64.exe/madcounter-windows-x86_64.exe
           draft: false
           prerelease: false

@@ -100,9 +100,23 @@ detect_platform() {
                     ;;
             esac
             ;;
+        MINGW*|CYGWIN*|MSYS*)
+            error "Windows detected (Git Bash / MSYS2)."
+            error ""
+            error "Install via Scoop (recommended for Windows):"
+            error "  scoop bucket add ervardaan https://github.com/ervardaan/scoop-bucket"
+            error "  scoop install madcounter"
+            error ""
+            error "Or run inside WSL (Windows Subsystem for Linux):"
+            error "  wsl --install          # one-time setup in PowerShell"
+            error "  Then re-run this script inside the WSL terminal."
+            exit 1
+            ;;
         *)
             error "Unsupported operating system: $OS"
-            error "MADCounter supports Linux and macOS."
+            error "MADCounter supports Linux and macOS natively."
+            error ""
+            error "Windows users: use Scoop or WSL (see above)."
             error ""
             error "To compile from source:"
             error "  git clone https://github.com/${GITHUB_USER}/${GITHUB_REPO}.git"
